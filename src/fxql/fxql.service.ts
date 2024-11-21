@@ -25,7 +25,7 @@ export class FxqlService {
     >();
     for (const entry of parsedStatements) {
       const key = `${entry.sourceCurrency}-${entry.destinationCurrency}`;
-      // @ts-expect-error: Temporarily ignoring type error due to lexer handling dynamic types
+      // @ts-expect-error: Temporarily ignoring type error due to dynamic type conversion
       latestEntries.set(key, entry);
     }
 
