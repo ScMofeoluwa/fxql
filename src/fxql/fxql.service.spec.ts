@@ -94,19 +94,6 @@ describe('FxqlService', () => {
       expect(mockPrismaService.fxqlEntry.upsert).toHaveBeenCalledTimes(2);
     });
 
-    it('should throw BadRequestException when exceeding 1000 statements', async () => {
-      const statements = Array(1001)
-        .fill('USD-GBP {\\n BUY 1.25\\n SELL 1.27\\n CAP 1000000\\n}')
-        .join('\\n\\n');
-
-      await expect(service.parseFxql(statements)).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.parseFxql(statements)).rejects.toThrow(
-        'Maximum 1000 currency pairs exceeded',
-      );
-    });
-
     it('should handle syntax errors in FXQL statements', async () => {
       const invalidInput =
         'USD-GBP {\\n buy invalid\\n sell 1.27\\n cap 1000000\\n}';

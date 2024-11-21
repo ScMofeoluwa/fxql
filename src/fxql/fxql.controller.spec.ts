@@ -4,6 +4,7 @@ import { FxqlController } from './fxql.controller';
 import { FxqlService } from './fxql.service';
 import { FxqlRequestDto } from './dto/fxql-request.dto';
 import { FxqlResponseDto } from './dto/fxql-response.dto';
+import { validate } from 'class-validator';
 
 describe('FxqlController', () => {
   let controller: FxqlController;
@@ -33,6 +34,39 @@ describe('FxqlController', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('DTO Validation', () => {
+    it('should pass validation for a valid FXQL statement', async () => {
+      const dto = new FxqlRequestDto();
+      dto.FXQL = 'USD-GBP {\\n BUY 1.25\\n SELL 1.27\\n CAP 1000000\\n}';
+
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should fail validation when FXQL statement is empty', async () => {
+      const dto = new FxqlRequestDto();
+      dto.FXQL = '';
+
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].constraints).toHaveProperty('isNotEmpty');
+    });
+
+    it('should fail validation when exceeding 1000 statements', async () => {
+      const dto = new FxqlRequestDto();
+      dto.FXQL = Array(1001)
+        .fill('USD-GBP {\\n BUY 1.25\\n SELL 1.27\\n CAP 1000000\\n}')
+        .join('\\n\\n');
+
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(1);
+      expect(errors[0].constraints).toHaveProperty(
+        'maxStatements',
+        'Maximum 1000 currency pairs exceeded',
+      );
+    });
   });
 
   describe('parseFxqlStatement', () => {
