@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  Redirect,
   Post,
   HttpCode,
   HttpStatus,
@@ -15,11 +17,17 @@ import { FxqlErrorDto } from './dto/fxql-error.dto';
 import { FxqlExceptionFilter } from './filters/fxql-exception.filter';
 
 @ApiTags('FXQL')
-@Controller('fxql')
+@Controller('')
 @UseFilters(FxqlExceptionFilter)
 export class FxqlController {
   private readonly logger = new Logger(FxqlController.name);
   constructor(private readonly service: FxqlService) {}
+
+  @Get()
+  @Redirect('/api-docs', 302)
+  handleRoot() {
+    return;
+  }
 
   @Post('statements')
   @HttpCode(HttpStatus.OK)
