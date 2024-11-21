@@ -11,10 +11,6 @@ export class FxqlService {
   async parseFxql(input: string) {
     const statements = input.split('\\n\\n');
 
-    if (statements.length > 1000) {
-      throw new BadRequestException('Maximum 1000 currency pairs exceeded');
-    }
-
     const parsedStatements = await Promise.all(
       statements.map((statement) => this.parseStatement(statement)),
     );

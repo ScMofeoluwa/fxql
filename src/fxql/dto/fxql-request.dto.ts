@@ -1,5 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  Validate,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationArguments,
+} from 'class-validator';
+
+@ValidatorConstraint({ name: 'maxStatements', async: false })
+export class MaxStatementsConstraint implements ValidatorConstraintInterface {
+  validate(value: string, args?: ValidationArguments): boolean {
+    if (!value) return false;
+    const statements = value.split('\\n\\n');
+    return statements.length <= 1000;
+  }
+
+  defaultMessage(args?: ValidationArguments): string {
+    return 'Maximum 1000 currency pairs exceeded';
+  }
+}
 
 export class FxqlRequestDto {
   @ApiProperty({
@@ -9,5 +29,6 @@ export class FxqlRequestDto {
   })
   @IsString()
   @IsNotEmpty()
+  @Validate(MaxStatementsConstraint)
   FXQL: string;
 }
