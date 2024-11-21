@@ -9,9 +9,6 @@ services:
     depends_on:
       - postgres
     command: /bin/sh -c "yarn run db:migrate && yarn run db:generate && yarn run start:dev"
-      - /bin/sh
-      - -c
-
 
   postgres:
     image: postgres:13
